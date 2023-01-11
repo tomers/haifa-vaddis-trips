@@ -10,7 +10,7 @@ from bidi.algorithm import get_display
 INPUT_XLSX_FILE = Path.cwd().joinpath('input.xlsx')
 OUTPUT_CSV_FILE = Path(str(INPUT_XLSX_FILE) + '.csv')
 XLSX_COLS = dict(name=1, phone=3, email=4, trips=5)
-NAME_PREFIX = '000'
+NAME_PREFIX = '000 haifa-vaddis'
 
 
 def get_row_fields(row):
