@@ -33,7 +33,7 @@ def normalize_email(email):
 
 
 def normalize_trips(trips):
-    return {trip.strip() for trip in trips.split(',')}
+    return {trip.strip() for trip in trips.split(';')}
 
 
 class Person:
