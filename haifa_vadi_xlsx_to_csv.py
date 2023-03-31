@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 import csv
 import re
-from pathlib import Path
+import click
 import openpyxl
 import phonenumbers
 import validators
 from bidi.algorithm import get_display
 
-INPUT_XLSX_FILE = Path.cwd().joinpath('input.xlsx')
-OUTPUT_CSV_FILE = Path(str(INPUT_XLSX_FILE) + '.csv')
 XLSX_COLS = dict(name=1, phone=3, email=4, trips=5)
 NAME_PREFIX = '000 haifa-vaddis'
 
@@ -47,11 +45,19 @@ class Person:
         self.trips = normalize_trips(self.trips)
 
 
-def convert_xlsx():
-    print(f"Converting {INPUT_XLSX_FILE}")
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.argument('in_file', type=click.File('rb'), required=True)
+@click.argument('out_file', type=click.File('w'), required=True)
+def convert_xlsx(in_file, out_file):
+    print(f"Converting {in_file} to {out_file}")
 
     # read Excel file
-    workbook = openpyxl.load_workbook(filename=INPUT_XLSX_FILE)
+    workbook = openpyxl.load_workbook(filename=in_file)
     sheet = workbook.active
 
     persons = [Person(sheet[row]) for row in range(2, sheet.max_row + 1)]
@@ -61,20 +67,16 @@ def convert_xlsx():
         print(get_display(trip))
 
     # store CSV file
-    with open(OUTPUT_CSV_FILE, 'w', newline='') as f:
-        c = csv.writer(f)
-        c.writerow(['First Name', 'Mobile Phone', 'E-mail Address'])
-        for trip in trips:
-            for person in persons:
-                if trip not in person.trips:
-                    continue
-                name = f'{NAME_PREFIX} {trip} {person.name}'
-                c.writerow([name, person.phone, person.email])
-
-
-def main():
-    convert_xlsx()
+    # with open(out_file, 'w', newline='') as f:
+    c = csv.writer(out_file)
+    c.writerow(['First Name', 'Mobile Phone', 'E-mail Address'])
+    for trip in trips:
+        for person in persons:
+            if trip not in person.trips:
+                continue
+            name = f'{NAME_PREFIX} {trip} {person.name}'
+            c.writerow([name, person.phone, person.email])
 
 
 if __name__ == '__main__':
-    main()
+    cli()
