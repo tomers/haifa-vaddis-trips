@@ -9,6 +9,7 @@ from bidi.algorithm import get_display
 
 XLSX_COLS = dict(name=1, phone=3, email=4, trips=5)
 NAME_PREFIX = '000 haifa-vaddis'
+SPLIT_REGEX = re.compile(r'[;,]')
 
 
 def get_row_fields(row):
@@ -33,7 +34,7 @@ def normalize_email(email):
 
 
 def normalize_trips(trips):
-    return {trip.strip() for trip in trips.split(';')}
+    return {trip.strip() for trip in SPLIT_REGEX.split(trips)}
 
 
 class Person:
